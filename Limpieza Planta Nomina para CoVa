@@ -1,0 +1,23 @@
+import pandas as pd
+Planta_Nominas = pd.read_excel('Planta nomina 1 de Agosto.xlsx')
+
+Planta_Nominas['concat'] = (
+    Planta_Nominas['Nº pers.'].astype(str) + '_' +
+    Planta_Nominas['Posición'].astype(str) + '_' +
+    Planta_Nominas['CC-nómina'].astype(str) + '_' +
+    Planta_Nominas['Sueldo diario/mensual'].astype(str)
+)
+ 
+# Eliminar duplicados basados en la columna concatenada
+Planta_Nominas = Planta_Nominas.drop_duplicates(subset=['concat'])
+
+#quita inactivos, jubilados y posiciones 999999
+# Planta_Nominas = Planta_Nominas[(Planta_Nominas['Status ocupación'] != 'Dado de baja') & (Planta_Nominas['Status ocupación'] != 'Pensionista') & (Planta_Nominas['Posición'] != 99999999)]
+
+
+#agrega la columna con el count del num de empleado
+Planta_Nominas['count_Nº_pers'] = Planta_Nominas.groupby('Nº pers.')['Nº pers.'].transform('count')
+#filtra para conservar solo SIX
+merged_df_six = Planta_Nominas[Planta_Nominas['SDvPer.'].astype(str).str.endswith('S')]
+
+Planta_Nominas.to_excel('Planta_Nominas_Cova.xlsx', index=False)
